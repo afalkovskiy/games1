@@ -1,5 +1,6 @@
-# create animation + rect
+# create animation
 import pygame
+import random
 
 pygame.init()
 
@@ -10,14 +11,17 @@ def get_image(sheet, frame, width, height, scale, color1):
     image.set_colorkey(color1)
     # image = pygame.transform.flip(surface=image, flip_x=True, flip_y=False)
     
-    
     return image
 
-SCREEN_WIDTH = 500
+def draw_text(text, font, color, x, y):
+    img = font.render(text, True, color)
+    screen.blit(img, (x,y))
+
+SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 500
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption('Alex game 9')
+pygame.display.set_caption('Alex game 10-5')
 
 sprite_sheet_image = pygame.image.load('img/doux4.png').convert_alpha()
 
@@ -26,6 +30,7 @@ BLACK = (0, 0, 0)
 
 animation_list = []
 animation_steps = 30
+animation_steps = 4
 last_update = pygame.time.get_ticks()
 animation_cooldown = 200
 frame = 0
@@ -34,36 +39,61 @@ for i in range(animation_steps):
     animation_list.append(get_image(sprite_sheet_image, i, 24, 24, 5, BLACK))
 
 
-
-
 run = True
 x=0
 y=200
 d=20
+
+xRect = 200
+xRect = random.randint(50, 300)
+yRect = 220
 flag = True
+flagStop = False
+
+score = 0
+
+
+
 while run:
 
-	#update background
-    # screen.blit(frame_0, (0,0))
     screen.fill(BG)
+    
+    text_font = pygame.font.SysFont(None, 30, bold=True)
+    draw_text("Score: " + str(score), text_font, (100,100,100), 10, 10)
 
-    pygame.draw.rect(screen, (0,100,0), pygame.Rect(200, 230, 60, 60))
-    # pygame.display.flip()
-   
+    pygame.draw.rect(screen, (0,100,0), pygame.Rect(xRect, yRect, 100, 80))
+    pygame.draw.rect(screen, (0,100,0), pygame.Rect(0, 300, SCREEN_WIDTH, 10))
 
     current_time = pygame.time.get_ticks()
     if current_time - last_update >= animation_cooldown:
         frame +=1
-        if x>380:
+        if x>SCREEN_WIDTH - 120:
             flag = False
+            xRect = random.randint(50, SCREEN_WIDTH - 200)
         if x<0:
             flag = True
+            xRect = random.randint(50, SCREEN_WIDTH - 200)
             # pygame.transform.rotate(animation_list[frame],180.)
         
         if flag==True:
             x = x + d
         else:
-            x = x -d       
+            x = x -d   
+
+        if abs(x - xRect) < 90 and abs(y - yRect) < 40:
+            d = 0
+            flagStop = True
+        else:
+            d = 20
+
+        if abs(x - xRect) >= 90 and abs(y - yRect) >= 40:
+            d = 20
+            y = 200
+            if flagStop == True:
+                flagStop = False
+                score = score + 1
+
+         
 
         if frame > len(animation_list)-1:
             frame = 0
@@ -88,10 +118,12 @@ while run:
         if event.type == pygame.QUIT:
             run = False
         if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                flag = False
+            if event.key == pygame.K_RIGHT:
+                flag = True
             if event.key == pygame.K_UP:
-                y = y + 20
-            if event.key == pygame.K_DOWN:
-                y = y - 20        
+                y = 120              
 
     pygame.display.update()
 

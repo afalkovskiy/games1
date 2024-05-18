@@ -1,4 +1,4 @@
-# create animation + rect
+# create animation
 import pygame
 
 pygame.init()
@@ -17,7 +17,7 @@ SCREEN_WIDTH = 500
 SCREEN_HEIGHT = 500
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption('Alex game 9')
+pygame.display.set_caption('Alex game 10-2')
 
 sprite_sheet_image = pygame.image.load('img/doux4.png').convert_alpha()
 
@@ -26,6 +26,7 @@ BLACK = (0, 0, 0)
 
 animation_list = []
 animation_steps = 30
+animation_steps = 4
 last_update = pygame.time.get_ticks()
 animation_cooldown = 200
 frame = 0
@@ -34,23 +35,23 @@ for i in range(animation_steps):
     animation_list.append(get_image(sprite_sheet_image, i, 24, 24, 5, BLACK))
 
 
-
-
 run = True
 x=0
 y=200
 d=20
+
+xRect = 200
+yRect = 230
 flag = True
+
+
+
 while run:
 
-	#update background
-    # screen.blit(frame_0, (0,0))
     screen.fill(BG)
 
-    pygame.draw.rect(screen, (0,100,0), pygame.Rect(200, 230, 60, 60))
-    # pygame.display.flip()
+    pygame.draw.rect(screen, (0,100,0), pygame.Rect(xRect, yRect, 60, 60))
    
-
     current_time = pygame.time.get_ticks()
     if current_time - last_update >= animation_cooldown:
         frame +=1
@@ -63,7 +64,11 @@ while run:
         if flag==True:
             x = x + d
         else:
-            x = x -d       
+            x = x -d   
+
+        if abs(x - xRect) < 4*d:
+            d = 0
+         
 
         if frame > len(animation_list)-1:
             frame = 0
@@ -88,10 +93,12 @@ while run:
         if event.type == pygame.QUIT:
             run = False
         if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                flag = False
+            if event.key == pygame.K_RIGHT:
+                flag = True
             if event.key == pygame.K_UP:
-                y = y + 20
-            if event.key == pygame.K_DOWN:
-                y = y - 20        
+                y = 120              
 
     pygame.display.update()
 
